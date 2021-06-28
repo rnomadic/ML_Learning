@@ -1,0 +1,52 @@
+import pandas as pd
+data = pd.read_excel(r"C:\JOE\Data\mayo_Cleand.xlsx",sheet_name='mayo_Cleand')
+data.head()
+
+import pandas as pd
+df = pd.DataFrame(data) 
+W_df = df[['Sex', 'Anatomical subtype1', 'Anatomical subtype2',
+       'Adverse outcomes1', 'Adverse outcomes2', 'Chromosomal microarray',
+       'Maternal miscarriages', 'YearBorn_2000', 'YearBorn_2010',
+       'YearBorn_2020', 'Indicator_Death', 'FamilyD_Aortopathy',
+       'FamilyD_Cardiomyopathy', 'FamilyD_Congenital Heart Disease',
+       'LifeSpan']]
+
+from sklearn.cluster import KMeans 
+from sklearn import metrics 
+from scipy.spatial.distance import cdist 
+import numpy as np 
+import matplotlib.pyplot as plt
+import gower
+from scipy.cluster.hierarchy import linkage, fcluster, dendrogram
+
+dm = gower.gower_matrix(W_df)
+Zd = linkage(dm) 
+
+which = lambda lst:list(np.where(lst)[0])
+TWssLst = []
+
+for k in range(2,15):
+    cld = fcluster(Zd, k, criterion='maxclust')
+    TWss = 0
+    for j in range(1,k+1):
+        tempData = data.iloc[which(cld == j)]
+        m = pd.DataFrame(gower.gower_matrix(tempData))
+        Wss = 0
+        for i in range(1,m.shape[0]):
+            Wss = Wss + sum(m[i][:i])
+        TWss = TWss + Wss
+    TWssLst.append(TWss) 
+
+TWssLst = [130.75,57.33,47.28,42.67,29.89,29.01,24.86,20.72,16.94,14.24,9,8.70,6.9]
+K =[2,3,4,5,6,7,8,9,10,11,12,13,14]
+
+plt.plot(K, TWssLst, 'bx-') 
+plt.xlabel('Values of K') 
+plt.ylabel('Distortion') 
+plt.title('The Elbow Method using Distortion') 
+plt.show() 
+
+cld = fcluster(Zd, 6, criterion='maxclust')
+data['ClusterId'] = cld
+
+dendrogram(Zd) 

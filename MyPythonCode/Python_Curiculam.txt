@@ -1,0 +1,9 @@
+
+1> *args, **kwargs, OOPS, nested functions
+2> List, Dictionary comprehension
+3> Map, Reduce, Filter, counter 
+4> Generators, Iterators, decorators, Itertools, re
+5> pickle, urllib
+7> Numpy, Pandas
+8> Matplotlib,seaborn
+9> Flask, Django
